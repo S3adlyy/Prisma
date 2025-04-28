@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Kameleon by Prisma</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --primary-dark: #5649C0;
+            --secondary: #00CEFF;
+            --dark: #2D3436;
+            --light: #F9F9F9;
+            --accent: #FD79A8;
+        }
+
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark);
+            background-color: var(--light);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .checkout-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .checkout-header h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .checkout-steps {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            padding: 0 30px;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .step.active .step-number {
+            background-color: var(--secondary);
+        }
+
+        .step.completed .step-number {
+            background-color: var(--accent);
+        }
+
+        .step-title {
+            font-weight: 500;
+        }
+
+        .step:not(:last-child):after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: -15px;
+            width: 30px;
+            height: 2px;
+            background-color: var(--primary);
+        }
+
+        .checkout-container {
+            display: flex;
+            gap: 40px;
+        }
+
+        .checkout-form {
+            flex: 2;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .order-summary {
+            flex: 1;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            align-self: flex-start;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: border 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .payment-methods {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .payment-method {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-method:hover {
+            border-color: var(--primary);
+        }
+
+        .payment-method.active {
+            border-color: var(--primary);
+            background-color: rgba(108, 92, 231, 0.05);
+        }
+
+        .payment-method i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .order-item {
+            display: flex;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .order-item-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-right: 15px;
+        }
+
+        .order-item-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .order-item-details {
+            flex: 1;
+        }
+
+        .order-item-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .order-item-price {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .order-totals {
+            margin-top: 20px;
+        }
+
+        .order-total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .order-total-row.total {
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .secure-checkout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .secure-checkout i {
+            color: var(--accent);
+            margin-right: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .checkout-container {
+                flex-direction: column;
+            }
+            
+            .checkout-steps {
+                flex-wrap: wrap;
+            }
+            
+            .step {
+                padding: 10px;
+            }
+            
+            .step:not(:last-child):after {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="checkout-header">
+            <h1>Finalisez Votre Commande</h1>
+            <p>Remplissez vos informations pour compléter votre achat</p>
+        </div>
+        
+        <div class="checkout-steps">
+            <div class="step completed">
+                <div class="step-number">1</div>
+                <div class="step-title">Panier</div>
+            </div>
+            <div class="step active">
+                <div class="step-number">2</div>
+                <div class="step-title">Livraison & Paiement</div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-title">Confirmation</div>
+            </div>
+        </div>
+        
+        <div class="checkout-container">
+            <div class="checkout-form">
+                <h2>Informations de Livraison</h2>
+                <form id="payment-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="first-name">Prénom</label>
+                            <input type="text" id="first-name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="last-name">Nom</label>
+                            <input type="text" id="last-name" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address">Adresse</label>
+                        <input type="text" id="address" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">Ville</label>
+                            <input type="text" id="city" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="zip">Code Postal</label>
+                            <input type="text" id="zip" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="country">Pays</label>
+                        <select id="country" class="form-control" required>
+                            <option value="">Sélectionnez un pays</option>
+                            <option value="FR">France</option>
+                            <option value="BE">Belgique</option>
+                            <option value="CH">Suisse</option>
+                            <option value="CA">Canada</option>
+                            <!-- Add more countries as needed -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Téléphone</label>
+                        <input type="tel" id="phone" class="form-control" required>
+                    </div>
+                    
+                    <h2 style="margin-top: 40px;">Méthode de Paiement</h2>
+                    
+                    <div class="payment-methods">
+                        <div class="payment-method active" data-method="card">
+                            <i class="far fa-credit-card"></i>
+                            <div>Carte Bancaire</div>
+                        </div>
+                        <div class="payment-method" data-method="paypal">
+                            <i class="fab fa-cc-paypal"></i>
+                            <div>PayPal</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="card-number">Numéro de Carte</label>
+                        <input type="text" id="card-number" class="form-control" placeholder="1234 5678 9012 3456" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="card-expiry">Date d'Expiration</label>
+                            <input type="text" id="card-expiry" class="form-control" placeholder="MM/AA" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="card-cvc">Cryptogramme</label>
+                            <input type="text" id="card-cvc" class="form-control" placeholder="CVC" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 30px;">
+                        <button type="submit" class="btn">Payer Maintenant</button>
+                    </div>
+                    
+                    <div class="secure-checkout">
+                        <i class="fas fa-lock"></i>
+                        <span>Paiement sécurisé - Vos informations sont protégées</span>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="order-summary">
+                <h2>Votre Commande</h2>
+                
+                <div class="order-item">
+                    <div class="order-item-img">
+                        <img src="img/body.jpg" alt="Kameleon Pro">
+                    </div>
+                    <div class="order-item-details">
+                        <div class="order-item-title">Kameleon Pro</div>
+                        <div class="order-item-price">6 489 DT TTC</div>
+                    </div>
+                </div>
+                
+                <div class="order-totals">
+                    <div class="order-total-row">
+                        <span>Sous-total</span>
+                        <span>6 489 DT TTC</span>
+                    </div>
+                    <div class="order-total-row">
+                        <span>Livraison</span>
+                        <span>Gratuite</span>
+                    </div>
+                    <div class="order-total-row">
+                        <span>Taxes</span>
+                        <span>99.80€</span>
+                    </div>
+                    <div class="order-total-row total">
+                        <span>Total</span>
+                        <span>6 890 DT TTC</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Payment method selection
+        const paymentMethods = document.querySelectorAll('.payment-method');
+        paymentMethods.forEach(method => {
+            method.addEventListener('click', () => {
+                paymentMethods.forEach(m => m.classList.remove('active'));
+                method.classList.add('active');
+                
+                // Here you would show/hide payment fields based on selection
+            });
+        });
+        
+        // Form submission
+        const paymentForm = document.getElementById('payment-form');
+        paymentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Here you would normally process the payment with a payment gateway
+            // For demo purposes, we'll simulate a successful payment
+            
+            // Get form data
+            const formData = {
+                firstName: document.getElementById('first-name').value,
+                lastName: document.getElementById('last-name').value,
+                address: document.getElementById('address').value,
+                city: document.getElementById('city').value,
+                zip: document.getElementById('zip').value,
+                country: document.getElementById('country').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                cardNumber: document.getElementById('card-number').value,
+                cardExpiry: document.getElementById('card-expiry').value,
+                cardCvc: document.getElementById('card-cvc').value
+            };
+            
+            // Simple validation
+            if (!formData.firstName || !formData.lastName || !formData.address || 
+                !formData.city || !formData.zip || !formData.country || 
+                !formData.email || !formData.phone || !formData.cardNumber || 
+                !formData.cardExpiry || !formData.cardCvc) {
+                alert('Veuillez remplir tous les champs obligatoires');
+                return;
+            }
+            
+            // Simulate payment processing
+            setTimeout(() => {
+                // Redirect to confirmation page
+                window.location.href = 'order-confirmation.html';
+            }, 1500);
+        });
+        
+        // Format card number
+        const cardNumber = document.getElementById('card-number');
+        cardNumber.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\s+/g, '');
+            if (value.length > 0) {
+                value = value.match(new RegExp('.{1,4}', 'g')).join(' ');
+            }
+            e.target.value = value;
+        });
+        
+        // Format expiry date
+        const cardExpiry = document.getElementById('card-expiry');
+        cardExpiry.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+    </script>
+</body>
+</html>
